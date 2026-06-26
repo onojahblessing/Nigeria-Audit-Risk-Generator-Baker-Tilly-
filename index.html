@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Audit Risk & Control Engine (Nigeria)</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #0f172a;
+            --success: #16a34a;
+            --dark: #334155;
+            --bg: #f8fafc;
+            --border: #cbd5e1;
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--dark);
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .container {
+            max-width: 1300px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .config-card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 30px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        label { font-weight: 600; font-size: 14px; color: #475569; }
+        input, select {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+        button:hover { background-color: var(--secondary); }
+        .output-section {
+            display: none;
+        }
+        .paper-heading {
+            background: #e2e8f0;
+            padding: 10px 15px;
+            font-weight: bold;
+            margin-top: 25px;
+            border-left: 5px solid var(--primary);
+            color: var(--secondary);
+        }
+        .wp-block {
+            background: white;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            border-top: none;
+            margin-bottom: 15px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .wp-row {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            padding: 6px 0;
+            border-bottom: 1px dashed #f1f5f9;
+        }
+        .wp-label { font-weight: bold; color: #64748b; }
+        .export-bar {
+            background: #f1f5f9;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>CaseWare Working Papers Generator</h1>
+    <p>Automated Risk Identification (Form 520) & Control Implementation (Form 532) for Nigeria</p>
+</header>
+
+<div class="container">
+    <div class="config-card">
+        <h3>Client Profile Setup</h3>
+        <div class="grid-3">
+            <div class="form-group">
+                <label>Company / Client Name</label>
+                <input type="text" id="clientName" placeholder="e.g., Dangote, BUA, Zenith Client">
+            </div>
+            <div class="form-group">
+                <label>Industry / Business Sector in Nigeria</label>
+                <select id="industry">
+                    <option value="manufacturing">FMCG & Manufacturing Sector</option>
+                    <option value="fsi">Financial Services & Banking Sector</option>
+                    <option value="oilgas">Oil & Gas (Downstream & Marketing)</option>
+                    <option value="logistics">Haulage & Fleet Logistics Sector</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Financial Year End</label>
+                <input type="date" id="yearEnd">
+            </div>
+        </div>
+        <div class="actions">
+            <button onclick="generateAuditSuite()">Generate CaseWare Profiles</button>
+        </div>
+    </div>
+
+    <div id="outputSection" class="output-section">
+        <div class="export-bar">
+            <div>
+                <strong>Active Workpapers for:</strong> <span id="lblClient"></span> Layout | Year End: <span id="lblDate"></span>
+            </div>
+            <button onclick="window.print()" style="background-color: var(--success)">Print / Save to PDF Working Papers</button>
+        </div>
+
+        <div id="dynamicContent"></div>
+    </div>
+</div>
+
+<script>
+    const industryDb = {
+        manufacturing: [
+            {
+                riskName: "Risk of Material Misstatement due to Incorrect Valuation of Foreign-Denominated Balances and Unrecorded Exchange Losses.",
+                riskDesc: "The client procures key raw chemical compounds and machinery from overseas suppliers, maintaining major open trade credits in USD. Due to extreme volatility and multi-tiered exchange systems across the Nigerian FX markets, there is an inherent risk that year-end foreign liabilities are translated at outdated or parallel index rates rather than official closing windows, triggering material misstatements under IAS 21.",
+                source: "Walkthrough of procurement cycles and review of central bank economic indices.",
+                fsLevel: "Business Risk", area: "Trade and Other Payables, Borrowings, Operating Expenses", assertions: "V = Valuation, C = Completeness", cycle: "Purchases, Payables, Payments", factors: "Uncertainty, Complexity, Change",
+                likelihood: "Very Likely", impact: "Very Material", inherentRisk: "Upper End", rmm: "Significant", sigRisk: "Yes",
+                mgmtResponse: "Finance tracks FMDQ daily spot rates and updates translation routines monthly.",
+                mitigation: "ERP system closing revaluations are isolated and compared to official NAFEM rates by the Financial Controller.",
+                auditResponse: "Circularize high-value foreign creditors, test year-end conversion rates applied against independent FMDQ records, and verify calculated FX gains/losses.",
+                controlName: "Month-End FX Rate Verification and Revaluation Approval Control",
+                controlDesc: "At the end of every reporting month, the Financial Controller extracts official NAFEM closing spot rates and updates the ERP master table. The system generates an FX Revaluation Report which is reviewed and signed off by the CFO before ledger integration.",
+                cType: "Manual / Dependent on IT", cFreq: "Monthly"
+            },
+            {
+                riskName: "Risk of Material Inventory Misstatement due to Warehouse Pilferage and Slow-Moving Stock Obsolescence.",
+                riskDesc: "Industrial inventory items are continuously stored in distributed physical warehouse facilities. High domestic inflation and local economic pressures present localized security and pilferage vulnerabilities. Furthermore, power drops and storage limitations introduce deterioration risks that might leave obsolete stock valued above Net Realizable Value (NRV).",
+                source: "Prior year audit observations and physical site inspection reports.",
+                fsLevel: "Business Risk", area: "Inventory, Cost of Sales", assertions: "E = Existence, V = Valuation", cycle: "Inventory", factors: "Susceptibility to misstatement due to fraud risk factors",
+                likelihood: "Likely", impact: "Material", inherentRisk: "Higher", rmm: "Elevated", sigRisk: "No",
+                mgmtResponse: "The warehouse logistics division deploys security guards and executes cyclic stock checks.",
+                mitigation: "Full wall-to-wall physical stock counts are executed quarterly and reconciled against sub-ledgers with explicit markdown provisions.",
+                auditResponse: "Attend the physical year-end stock counts to execute independent sample testing; inspect stock condition on the floor; review the historical validity of inventory aging logs.",
+                controlName: "Quarterly Wall-to-Wall Inventory Reconciliation and Variance Reporting",
+                controlDesc: "Warehouse teams perform full physical counts quarterly. The outputs are mapped directly against general ledger balances by an independent internal auditor, with all adjustments verified by the Operations Director.",
+                cType: "Manual", cFreq: "Quarterly"
+            },
+            {
+                riskName: "Risk of Omitted or Complex Overstatement of Manufacturer Energy Subsidies or Power Rebates.",
+                riskDesc: "To bypass grid reliance, the company engages in power agreements or energy tax relief frameworks. Because these incentives feature intricate multi-variable clauses and local operational terms, there is an inherent risk that management overstates contract assets or misinterprets qualifying conditions, impacting accuracy.",
+                source: "Review of electricity framework agreements and management discussion.",
+                fsLevel: "Business Risk", area: "Contract Assets, Operating Expenses", assertions: "A = Accuracy, R = Rights and Obligations", cycle: "Financial Reporting", factors: "Complexity, Subjectivity",
+                likelihood: "Highly Unlikely", impact: "Material", inherentRisk: "Lower", rmm: "Moderate", sigRisk: "No",
+                mgmtResponse: "Management relies on structured legal counsel to evaluate energy credits.",
+                mitigation: "A quarterly legal review checks that all terms match regulatory notices before accounting recording.",
+                auditResponse: "Examine underlying power frameworks, re-perform credit calculations, and review correspondence with energy distribution bodies.",
+                controlName: "Quarterly Energy Credit Agreement Independent Verification",
+                controlDesc: "The Legal Counsel and Head of Finance cross-examine actual energy consumption statements against concession terms quarterly to approve associated accrual postings.",
+                cType: "Manual", cFreq: "Quarterly"
+            }
+        ],
+        fsi: [
+            {
+                riskName: "Risk of Fraudulent Electronic Fund Diversion via Unauthorized Database Access.",
+                riskDesc: "Given massive daily electronic payment volumes and digital clearances processed through core corporate infrastructure, there is an elevated fraud risk that privileged system administrators or bad actors bypass input authorization fields to execute phantom transfers or manipulate ledger values.",
+                source: "Internal security telemetry analysis and system control walkthroughs.",
+                fsLevel: "Fraud Risk", area: "Revenue, Cash and Cash Equivalents", assertions: "C = Completeness, O = Occurrence, A = Accuracy", cycle: "Revenue, Receivables, Receipts", factors: "Susceptibility to misstatement due to fraud risk factors",
+                likelihood: "Likely", impact: "Very Material", inherentRisk: "Upper End", rmm: "Significant", sigRisk: "Yes",
+                mgmtResponse: "Enforced structural multi-factor authentication protocols on transaction databases.",
+                mitigation: "Daily automated security logs monitor configuration tables and immediately escalate unauthorized field edits.",
+                auditResponse: "Engage IT Specialists to audit the design of access configurations; review transaction log summaries to identify unauthorized off-hours data alterations.",
+                controlName: "Daily Automated Core Database Alteration Auditing",
+                controlDesc: "An independent system monitoring tool checks the transaction schema database every 24 hours and builds an anomaly report for the Chief Compliance Officer.",
+                cType: "Automatic", cFreq: "Daily"
+            },
+            {
+                riskName: "Risk of Understatement of Expected Credit Loss (ECL) Provisions on Commercial Credit Lines.",
+                riskDesc: "The local economic landscape features significant borrower vulnerability to interest adjustments and inflation shocks. There is an inherent risk that management applies over-optimistic forward-looking macroeconomic metrics or understates historical loss indicators, leading to an understated ECL provision under IFRS 9.",
+                source: "Walkthrough of credit appraisal models and monetary policy risk assessments.",
+                fsLevel: "Business Risk", area: "Investments, Operating Expenses", assertions: "V = Valuation, A = Accuracy", cycle: "Investments", factors: "Subjectivity, Uncertainty, Susceptibility to misstatement due to management bias",
+                likelihood: "Likely", impact: "Very Material", inherentRisk: "Upper End", rmm: "Significant", sigRisk: "Yes",
+                mgmtResponse: "Risk management updates loan impairment matrices using external economic consensus papers.",
+                mitigation: "The Credit Committee inspects provisioning outputs monthly using parallel evaluation tracks.",
+                auditResponse: "Challenge the assumptions embedded in management's ECL model; cross-examine applied macro variables against central bank data and check proper category classification.",
+                controlName: "Monthly Credit Committee Provisioning Engine Validation",
+                controlDesc: "The Risk and Credit Committee convenes monthly to scrutinize non-performing loan buckets, verifying that the provisioning algorithm correctly incorporates current default weights.",
+                cType: "Manual / Dependent on IT", cFreq: "Monthly"
+            },
+            {
+                riskName: "Risk of Material Non-Compliance with Evolving Anti-Money Laundering (AML) Regulatory Reporting Frameworks.",
+                riskDesc: "With strict enforcement protocols implemented by local statutory agencies (like the NFIU and EFCC), failures to capture, track, and report large cash transfers can prompt substantial regulatory fines, threatening operational continuity and distorting expense liabilities.",
+                source: "Review of compliance registers and discussions with internal control heads.",
+                fsLevel: "Business Risk", area: "Trade and Other Payables, Operating Expenses", assertions: "C = Completeness, P = Presentation", cycle: "Financial Reporting", factors: "Complexity, Change",
+                likelihood: "Likely", impact: "Material", inherentRisk: "Higher", rmm: "Elevated", sigRisk: "No",
+                mgmtResponse: "Compliance teams deploy automated anti-money laundering monitoring modules.",
+                mitigation: "A dedicated team reviews and clears flagged transactions before they trigger external compliance notices.",
+                auditResponse: "Inspect compliance tracking records, evaluate the completeness of regulatory filings, and review correspondence with enforcement bodies.",
+                controlName: "Real-Time AML Exception Monitoring and Resolution Routing",
+                controlDesc: "The automated core system isolates transactions exceeding institutional thresholds and halts processing until a compliance specialist uploads verified customer documentation.",
+                cType: "Automatic", cFreq: "Per Transaction"
+            }
+        ],
+        oilgas: [
+            {
+                riskName: "Risk of Operational Diesel/Fuel Leakage and Fraudulent Bulk Storage Manipulation.",
+                riskDesc: "Due to continuous reliance on remote multi-megawatt backup generators and localized fuel terminals, massive volumes of refined products are acquired and stored. This environment creates high exposures to asset diversion, vendor under-delivery, or intentional fuel log book manipulation by internal technicians.",
+                source: "Prior audit tracking reports and manufacturing site expense reviews.",
+                fsLevel: "Business Risk", area: "Operating Expenses, Trade and Other Payables", assertions: "O = Occurrence, C = Completeness, A = Accuracy", cycle: "Purchases, Payables, Payments", factors: "Susceptibility to misstatement due to fraud risk factors",
+                likelihood: "Likely", impact: "Material", inherentRisk: "Higher", rmm: "Elevated", sigRisk: "No",
+                mgmtResponse: "Fuel usage metrics are systematically tracked against engine logbook timestamps.",
+                mitigation: "Independent physical dip checks are conducted upon product receipt prior to invoice clearance.",
+                auditResponse: "Recalculate sample billing statements against physical delivery receipts, warehouse storage logs, and logbook metrics.",
+                controlName: "Dual-Signoff Bulk Fuel Delivery Validation Protocol",
+                controlDesc: "Facility Engineering teams execute physical dip checks before and after fuel delivery, matching figures to vendor waybills before signature.",
+                cType: "Manual", cFreq: "Per Transaction"
+            },
+            {
+                riskName: "Risk of Inaccurate Valuation of Crude Oil/Refined Product Inventories due to Product Degradation or Water Seepage.",
+                riskDesc: "Refined hydrocarbon stocks stored in terminal tanks can experience volume shrinkage or contamination from water seepage and temperature shifts. If management does not adjust inventory density records, book quantities may be overstated relative to their final market value.",
+                source: "Walkthrough of terminal operations and quality assurance documentation.",
+                fsLevel: "Business Risk", area: "Inventory, Cost of Sales", assertions: "V = Valuation, E = Existence", cycle: "Inventory", factors: "Complexity, Uncertainty",
+                likelihood: "Likely", impact: "Material", inherentRisk: "Higher", rmm: "Elevated", sigRisk: "No",
+                mgmtResponse: "Product quality laboratories execute routine structural analysis across all storage coordinates.",
+                mitigation: "Daily automatic tank gauge readings cross-reference manual hydrometer assays to adjust pricing structures.",
+                auditResponse: "Review year-end tank survey reports compiled by independent inspectors and test the accuracy of management's volume adjustment math.",
+                controlName: "Daily Automated Tank Gauge and Hydrometer Density Reconciliation",
+                controlDesc: "Every morning, the terminal supervisor matches software telemetry measurements with physical hydrometer density assays to correct volume computations for ambient temperature fluctuations.",
+                cType: "Manual / Dependent on IT", cFreq: "Daily"
+            },
+            {
+                riskName: "Risk of Misstatement of Asset Retirement Obligations (ARO) for Downstream Infrastructure.",
+                riskDesc: "The decommissioning and remediation costs for industrial fuel storage installations involve multi-decade projections. Due to long-term volatility in inflation indices and local environmental regulations, management estimates can easily incorporate faulty assumptions, causing significant understatements of long-term liabilities.",
+                source: "Review of environmental impact files and accounting policy notes.",
+                fsLevel: "Business Risk", area: "Trade and Other Payables, Property Plant and Equipment", assertions: "V = Valuation, C = Completeness", cycle: "Financial Reporting", factors: "Subjectivity, Uncertainty",
+                likelihood: "Highly Unlikely", impact: "Material", inherentRisk: "Lower", rmm: "Moderate", sigRisk: "No",
+                mgmtResponse: "External engineering consultants review asset retirement schedules every two years.",
+                mitigation: "The finance group recalculates discounted obligation values annually using current risk-free treasury rates.",
+                auditResponse: "Evaluate the credentials of management's third-party engineering specialist; verify the discount and inflation inputs used in calculation models against central bank metrics.",
+                controlName: "Annual Asset Retirement Obligation Mathematical Recalculation Review",
+                controlDesc: "The Corporate Finance Director recalculates the cash-flow discount matrix for restoration liabilities annually, updating it for current inflation indices and sovereign yield curves.",
+                cType: "Manual", cFreq: "Annually"
+            }
+        ],
+        logistics: [
+            {
+                riskName: "Risk of Material Revenue Cut-off Misstatements due to Long-Haul interstate Distribution Lags.",
+                riskDesc: "Long-haul freight routing across extensive interstate links encounters continuous security delays and mechanical bottlenecks. If revenue invoices are generated when trailers launch rather than when physical delivery is acknowledged by the end customer, revenue may be recorded in the wrong financial period.",
+                source: "Management interview records and transit data analysis.",
+                fsLevel: "Business Risk", area: "Revenue, Contract Liabilities", assertions: "OC = Occurrence/Cut-off, C = Completeness", cycle: "Revenue, Receivables, Receipts", factors: "Uncertainty",
+                likelihood: "Likely", impact: "Material", inherentRisk: "Higher", rmm: "Elevated", sigRisk: "No",
+                mgmtResponse: "Revenue recognition matches digital customer delivery signatures.",
+                mitigation: "The automated billing system holds invoicing lines until tracking coordinates match delivery records.",
+                auditResponse: "Perform detailed cut-off testing on delivery profiles before and after year-end by inspecting physical, signed waybills from customers.",
+                controlName: "Electronic Delivery Note Validation and Invoicing Lock",
+                controlDesc: "The billing system prevents customer invoices from being finalized until a signed delivery note is scanned and uploaded by the field operator.",
+                cType: "Manual / Dependent on IT", cFreq: "Per Transaction"
+            },
+            {
+                riskName: "Risk of Component Understatement within Heavy-Duty Haulage Fleet Valuation.",
+                riskDesc: "Large transport fleets face severe wear from challenging highway conditions. If management applies generic flat depreciation percentages across entire vehicle assemblies rather than accounting for high-wear components (like specialized engine blocks or heavy axles) separately, asset life metrics can become heavily distorted under IAS 16.",
+                source: "Fleet engineering maintenance records and assets walkthrough.",
+                fsLevel: "Business Risk", area: "Property Plant and Equipment, Operating Expenses", assertions: "V = Valuation, E = Existence", cycle: "Financial Reporting", factors: "Complexity",
+                likelihood: "Highly Unlikely", impact: "Material", inherentRisk: "Lower", rmm: "Moderate", sigRisk: "No",
+                mgmtResponse: "The engineering team maintains asset parts breakdown sheets.",
+                mitigation: "The fixed asset sub-ledger isolates high-wear mechanical groups into standalone tracking buckets.",
+                auditResponse: "Examine management's component tracking schedules, verify component lifespans against fleet records, and cross-check matching depreciation calculations.",
+                controlName: "Annual Fleet Asset Component Lifecycle Review",
+                controlDesc: "Fleet Management and Accounting review vehicle maintenance logs annually to align asset useful lives with observed wear-and-tear data.",
+                cType: "Manual", cFreq: "Annually"
+            },
+            {
+                riskName: "Risk of Material Understatement of Insurance Claims Recoverable and Associated Overstatement of Fleet Repair Expense.",
+                riskDesc: "Given frequent transit accidents along regional routes, high volume insurance compensation files are regularly generated. Because claims processing timelines vary, there is a risk that management immediately accounts for cash collections without verifying open claims, misstating prepayments and expenses.",
+                source: "Prior year insurance reimbursement testing and review of asset repair accounts.",
+                fsLevel: "Business Risk", area: "Prepayments, Operating Expenses", assertions: "C = Completeness, A = Accuracy", cycle: "Financial Reporting", factors: "Uncertainty, Subjectivity",
+                likelihood: "Likely", impact: "Material", inherentRisk: "Higher", rmm: "Elevated", sigRisk: "No",
+                mgmtResponse: "Legal officers maintain active registers tracking open insurance files.",
+                mitigation: "Finance performs monthly reviews of workshop work orders against formal insurer acknowledgment notices.",
+                auditResponse: "Trace outstanding insurance claims to formal offer letters from underwriter firms and verify that corresponding accident repair costs are accounted for completely.",
+                controlName: "Monthly Open Insurance Claim Ledger Reconciliation",
+                controlDesc: "The Treasury team checks workshop repair costs against active underwriter claim confirmation letters monthly to adjust outstanding receivable entries.",
+                cType: "Manual", cFreq: "Monthly"
+            }
+        ]
+    };
+
+    function generateAuditSuite() {
+        const client = document.getElementById('clientName').value;
+        const industry = document.getElementById('industry').value;
+        const rawDate = document.getElementById('yearEnd').value;
+
+        if(!client || !rawDate) {
+            alert('Please specify the Client Name and Financial Year End Date.');
+            return;
+        }
+
+        const dateObj = new Date(rawDate);
+        const formattedDate = dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+        document.getElementById('lblClient').innerText = client;
+        document.getElementById('lblDate').innerText = formattedDate;
+
+        const dynamicContent = document.getElementById('dynamicContent');
+        dynamicContent.innerHTML = '';
+
+        const riskProfileList = industryDb[industry] || [];
+
+        riskProfileList.forEach((item, index) => {
+            const riskSection = `
+                <div class="paper-heading">FORM 520 – RISK REPORT (Item #${index + 1} for ${client})</div>
+                <div class="wp-block">
+                    <div class="wp-row"><div class="wp-label">New Risk Name:</div><div>${item.riskName}</div></div>
+                    <div class="wp-row"><div class="wp-label">New Risk Description:</div><div>${item.riskDesc}</div></div>
+                    <div class="wp-row"><div class="wp-label">Source / Reference:</div><div>${item.source}</div></div>
+                    <div class="wp-row"><div class="wp-label">Financial Statement Level:</div><div>• ${item.fsLevel}</div></div>
+                    <div class="wp-row"><div class="wp-label">Financial Statement Areas:</div><div>${item.area}</div></div>
+                    <div class="wp-row"><div class="wp-label">Assertions:</div><div>• ${item.assertions}</div></div>
+                    <div class="wp-row"><div class="wp-label">Business Cycles Affected:</div><div>• ${item.cycle}</div></div>
+                    <div class="wp-row"><div class="wp-label">Inherent Risk Factors:</div><div>• ${item.factors}</div></div>
+                    <div class="wp-row"><div class="wp-label">Likelihood to Occur:</div><div>${item.likelihood}</div></div>
+                    <div class="wp-row"><div class="wp-label">Monetary Impact:</div><div>${item.impact}</div></div>
+                    <div class="wp-row"><div class="wp-label">Inherent Risk:</div><div>${item.inherentRisk}</div></div>
+                    <div class="wp-row"><div class="wp-label">Control Reliance:</div><div>Moderate</div></div>
+                    <div class="wp-row"><div class="wp-label">RMM:</div><div><strong>${item.rmm}</strong></div></div>
+                    <div class="wp-row"><div class="wp-label">Significant Risk:</div><div>${item.sigRisk}</div></div>
+                    <div class="wp-row"><div class="wp-label">Procedures Other Than Substantive:</div><div>No</div></div>
+                    <div class="wp-row"><div class="wp-label">Roll Forward:</div><div>No</div></div>
+                    <div class="wp-row"><div class="wp-label">Management Response:</div><div>${item.mgmtResponse}</div></div>
+                    <div class="wp-row"><div class="wp-label">Risk Treatment / Mitigation:</div><div>${item.mitigation}</div></div>
+                    <div class="wp-row"><div class="wp-label">Audit Response:</div><div>${item.auditResponse}</div></div>
+                    <div class="wp-row"><div class="wp-label">Audit has properly addressed this risk:</div><div>Yes</div></div>
+                </div>
+
+                <div class="paper-heading">FORM 532 – CONTROL IMPLEMENTATION</div>
+                <div class="wp-block">
+                    <div class="wp-row"><div class="wp-label">New Control Name:</div><div>${item.controlName}</div></div>
+                    <div class="wp-row"><div class="wp-label">Associated Risk:</div><div>${item.riskName}</div></div>
+                    <div class="wp-row"><div class="wp-label">New Control Description:</div><div>${item.controlDesc}</div></div>
+                    <div class="wp-row"><div class="wp-label">Financial Statement Level:</div><div>• ${item.fsLevel}</div></div>
+                    <div class="wp-row"><div class="wp-label">Financial Statement Areas:</div><div>${item.area}</div></div>
+                    <div class="wp-row"><div class="wp-label">Assertions:</div><div>• ${item.assertions}</div></div>
+                    <div class="wp-row"><div class="wp-label">Business Cycles Affected:</div><div>• ${item.cycle}</div></div>
+                    <div class="wp-row"><div class="wp-label">Indirect Control:</div><div>No</div></div>
+                    <div class="wp-row"><div class="wp-label">Manual / Automatic:</div><div>• ${item.cType}</div></div>
+                    <div class="wp-row"><div class="wp-label">Frequency of Control:</div><div>• ${item.cFreq}</div></div>
+                    <div class="wp-row"><div class="wp-label">Evaluation of Control Design:</div><div>Satisfactory</div></div>
+                    <div class="wp-row"><div class="wp-label">Implementation Verified:</div><div>Satisfactory</div></div>
+                    <div class="wp-row"><div class="wp-label">Roll Forward:</div><div>No</div></div>
+                    <div class="wp-row"><div class="wp-label">Test of Control:</div><div>Yes</div></div>
+                    <div class="wp-row"><div class="wp-label">Will the Control be relied upon?</div><div>Yes</div></div>
+                </div>
+                <hr style="border: 2px solid var(--secondary); margin: 40px 0;">
+            `;
+            dynamicContent.innerHTML += riskSection;
+        });
+
+        document.getElementById('outputSection').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
